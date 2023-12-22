@@ -1,0 +1,88 @@
+#+TITLE: TorchSig notes
+#+STARTUP: overview indent
+
+* Links
+
+- TorchSig [[https://torchsig.com/][website]]
+- TorchSig Github [[https://github.com/torchdsp/torchsig][repository]]
+- Email contacts
+  - [[mailto:gvanhoy@peratonlabs.com][Garrett Vanhoy]], Peraton Labs
+
+* Installation
+
+** Download
+
+  $ =git clone git@github.com:rodprice/torchsig.git=
+  $ =cd torchsig=
+  $ =git branch dev=
+  $ =git checkout dev=
+
+** Conda environment
+
+  $ =conda create -n torchsig=
+  $ =conda activate torchsig=
+
+** TorchSig package install
+
+The TorchSig website tells you to install using
+
+  $ =pip install -r requirements.txt=
+  $ =pip install --editable .=
+
+The thing is, there is no =requirements.txt= file. Instead, there's
+a =pyproject.toml= file. Just do
+
+  $ =pip install --editable .=
+
+That will download and install =torch= 2.0.1, while the current version
+of Torch is 2.1.1. It also installs =torchvision= 0.15.2 and =torchsig=
+0.4.1. For more on the =pyproject.toml= format, see links, etc. given
+[[https://stackoverflow.com/questions/64150719/how-to-write-a-minimally-working-pyproject-toml-file-that-can-install-packages?noredirect=1&lq=1][here]].
+
+** TorchSig documentation
+
+The documentation [[https://torchsig.readthedocs.io/en/latest/][online]] is missing all kinds of things. Generate
+it locally by
+
+  $ =cd docs=
+  $ =pip install -r docs-requirements.txt=
+  $ =make html=
+  $ =firefox build/html/index.html=
+
+* Generate datasets
+
+The TorchSig paper, "Large Scale Radio Frequency Classification",
+claims that the Sig53 dataset and others can be downloaded from the
+TorchSig website. I can't find it.
+
+The =scripts= directory contains Python scripts to generate the various
+datasets used in the paper. Unfortunately, running them results in
+the error "ValueError: cannot find context for 'fork'". Well, Windows
+doesn't do "fork". See the =multiprocessing= [[https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods][documentation]].
+
+* LMDB bugs
+
+The Python =lmdb= [[https://github.com/jnwatson/py-lmdb/][library]] wraps the C library of the same name (docs
+for the C library [[http://www.lmdb.tech/doc/index.html][here]]).
+
+Running the notebook =00_example_sig53_dataset.ipynb= results in an
+error in the second code cell, when the =Sig53= class is instantiated.
+Following the backtrace shows that the error occurs when the code
+attempts to create an =lmdb= =Environment=. The call includes the
+argument =map_size=int(1e12)=, telling =lmdb= that the maximum size of
+an environment on disk is 1TB! On Linux that's OK, since =lmdb= uses
+that number as the upper limit of the file size. Windows, on the
+other hand, stupidly tries to write out a 1TB file to disk, resulting
+in the error "There is not enough space of disk." Imagine that.
+
+I spent most of an afternoon running this down. It seems that the
+Python =lmdb= module has had a long-standing bug, since 2015 (!),
+that still hasn't been fixed. See the bug report [[https://github.com/jnwatson/py-lmdb/issues/85][here]]. A purported
+workaround is sort of documented [[https://github.com/NVIDIA/DIGITS/issues/206][here]] and [[https://github.com/jnwatson/py-lmdb/issues/85][here]]. In yet another
+[[https://github.com/NVIDIA/DIGITS/pull/209][issue]], the workaround is (1) set the initial map_size to the default
+10 MB, and (2) when =lmdb= throws a =MapFullError=, double the map size
+by calling =set_map_size=.
+
+Some possibly useful test code is in this [[https://gist.github.com/anonymous/4f9b4307ed23df80e7d4][gist]]. The Python wrapper
+library uses an old version of the C library (see the issue [[https://github.com/jnwatson/py-lmdb/issues/353][here]]).
+The Github repo may have an up-to-date version.
