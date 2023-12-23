@@ -58,7 +58,8 @@ TorchSig website. I can't find it.
 The =scripts= directory contains Python scripts to generate the various
 datasets used in the paper. Unfortunately, running them results in
 the error "ValueError: cannot find context for 'fork'". Well, Windows
-doesn't do "fork". See the =multiprocessing= [[https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods][documentation]].
+doesn't do "fork". See the =multiprocessing= [[https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods][documentation]]. Also see
+[[https://pytorch.org/docs/stable/data.html#multi-process-data-loading][Multi-process data loading]] in the PyTorch [[https://pytorch.org/docs/stable/index.html][documentation]].
 
 * LMDB bugs
 
