@@ -69,12 +69,12 @@ for the C library [[http://www.lmdb.tech/doc/index.html][here]]).
 Running the notebook =00_example_sig53_dataset.ipynb= results in an
 error in the second code cell, when the =Sig53= class is instantiated.
 Following the backtrace shows that the error occurs when the code
-attempts to create an =lmdb= =Environment=. The call includes the
-argument =map_size=int(1e12)=, telling =lmdb= that the maximum size of
-an environment on disk is 1TB! On Linux that's OK, since =lmdb= uses
-that number as the upper limit of the file size. Windows, on the
-other hand, stupidly tries to write out a 1TB file to disk, resulting
-in the error "There is not enough space of disk." Imagine that.
+attempts to create an =lmdb= =Environment=. The call includes the argument
+=map_size=int(1e12)=, telling =lmdb= that the maximum size of an
+environment on disk is 1TB! On Linux that's OK, since =lmdb= uses that
+number as the upper limit of the file size. Windows, on the other
+hand, tries to write out a 1TB file to disk, resulting in the error
+"There is not enough space of disk."
 
 I spent most of an afternoon running this down. It seems that the
 Python =lmdb= module has had a long-standing bug, since 2015 (!),
