@@ -14,3 +14,6 @@ lightning_logs/
 dist/
 examples/*.ipynb_checkpoints/
 NUL
+*.~1~
+*.~2~
+*.~3~

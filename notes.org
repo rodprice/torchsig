@@ -49,7 +49,13 @@ it locally by
   $ =make html=
   $ =firefox build/html/index.html=
 
-* Generate datasets
+* Windows quirks
+
+Below are notes from my experience trying to run TorchSig on Windows.
+Summary: you can't make it work, even with something like [[https://msys2.org][MSYS2]] that
+aims to be Unix-like.
+
+** Generate datasets
 
 The TorchSig paper, "Large Scale Radio Frequency Classification",
 claims that the Sig53 dataset and others can be downloaded from the
@@ -61,7 +67,7 @@ the error "ValueError: cannot find context for 'fork'". Well, Windows
 doesn't do "fork". See the =multiprocessing= [[https://docs.python.org/3/library/multiprocessing.html#contexts-and-start-methods][documentation]]. Also see
 [[https://pytorch.org/docs/stable/data.html#multi-process-data-loading][Multi-process data loading]] in the PyTorch [[https://pytorch.org/docs/stable/index.html][documentation]].
 
-* LMDB bugs
+** LMDB bugs
 
 The Python =lmdb= [[https://github.com/jnwatson/py-lmdb/][library]] wraps the C library of the same name (docs
 for the C library [[http://www.lmdb.tech/doc/index.html][here]]).
@@ -87,3 +93,29 @@ by calling =set_map_size=.
 Some possibly useful test code is in this [[https://gist.github.com/anonymous/4f9b4307ed23df80e7d4][gist]]. The Python wrapper
 library uses an old version of the C library (see the issue [[https://github.com/jnwatson/py-lmdb/issues/353][here]]).
 The Github repo may have an up-to-date version.
+
+* Linux quirks
+
+** Docker
+
+TorchSig comes with a Dockerfile. After doing =docker login= on Docker
+Hub, build it with
+
+  $ =cd torchsig=
+  $ =docker build --tag torchsig:1.4.1 .=
+
+The first time I ran this, the build took about ten minutes, and the
+image size was 7.7 GB. Running =docker images= confirms that the build
+was successful. To make a disposable container from this image, and
+open a shell inside the container, do
+
+  $ =docker run --rm -it --entrypoint bash <image id>=
+
+You should be in a bash shell. The =--rm= flag means that once the run
+is complete, the container will be removed. The image itself can be
+removed with =docker rmi <image id>=, although the 7.7 GB remains in a
+local cache.
+
+The more common way to get a running shell inside the container is
+=docker exec -it <container id> bash=, but that requires a container
+that is still running.
