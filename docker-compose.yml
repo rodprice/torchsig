@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  dev:
+    image: torchsig:dev
+    build: .
+    volumes:
+      - .:/code
+      - /data/rdprice:/data
+    ports:
+      - 8887:8887
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
+    command: bash -c "sleep infinity"
