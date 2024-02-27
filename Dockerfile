@@ -14,6 +14,6 @@ ADD pyproject.toml /build/pyproject.toml
 
 RUN pip3 install /build
 
-RUN pip3 install notebook jupyterlab pytest
+RUN pip3 install notebook jupyterlab pytest pytest-benchmark tensorboard
 
 WORKDIR /workspace/code

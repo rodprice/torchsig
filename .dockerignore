@@ -1,3 +1,4 @@
 examples/*
 *.org
 .git/
+*.~[1-9]?~

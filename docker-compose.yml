@@ -4,10 +4,13 @@ services:
   dev:
     image: torchsig:dev
     build: .
+    shm_size: '8gb'
     volumes:
       - .:/code
       - /data/rdprice:/data
     ports:
+      - 5000:5000
+      - 6006:6006
       - 8887:8887
     deploy:
       resources:
