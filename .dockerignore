@@ -2,3 +2,4 @@ examples/*
 *.org
 .git/
 *.~[1-9]?~
+*.mdb

@@ -20,3 +20,4 @@ services:
               count: 1
               capabilities: [gpu]
     command: bash -c "sleep infinity"
+    
