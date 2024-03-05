@@ -3,13 +3,16 @@ version: "3.8"
 services:
   dev:
     image: torchsig:dev
-    build: .
+    build:
+      context: .
+      args:
+        UID: ${HOST_UID}
+        GID: ${HOST_GID}
     shm_size: '8gb'
     volumes:
       - .:/code
       - /data/rdprice:/data
     ports:
-      - 5000:5000
       - 6006:6006
       - 8887:8887
     deploy:
@@ -20,4 +23,3 @@ services:
               count: 1
               capabilities: [gpu]
     command: bash -c "sleep infinity"
-    
